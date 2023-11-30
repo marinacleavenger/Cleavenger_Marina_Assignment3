@@ -1,0 +1,86 @@
+/* I inported the font from GoogleFonts.com that matches the scary theme*/
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+/* How the table is formatted (drawn the completed table from Store 1/Poke12) */
+table {
+    border-collapse: collapse;
+    width: 65%;
+    }
+    /* Border of table */
+    table, td {
+    border:1px solid black;
+    margin-left: auto;
+      margin-right: auto;
+    
+    }
+    /* Table header and the table text should align to the left of the invoice  */
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    
+    th{
+        font-size: 22px;
+        border: 3px double orange;
+    }
+    /* When there is the footer including the tax, shipping, and total it will be bolded */
+    tfoot{
+        font-weight: bold;
+    }
+    /* Background of the webpage */
+    body {
+        background-color: rgb(226, 195, 255);
+    }
+/* inserted the font from GoogleFonts so that everything in the body of the html will be this font */
+    body {
+        font-family: "Creepster", sans-serif;
+    }  
+/* after naming the image, i put the name in here so i can edit the size to fit the page better */
+    .img-invoice{
+        width: 80px;
+        height: 80px;
+      }
+
+/* regierster . css */
+ * {box-sizing: border-box}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: rgb(124, 255, 124);
+}
+/* Set a style for the submit/register button */
+.registerbtn {
+    background-color: #a504aa;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+  
+  .registerbtn:hover {
+    opacity:1;
+  }
+  
+  /* Add a blue text color to links */
+  a {
+    color: dodgerblue;
+  }
+  
+  /* Set a grey background color and center the text of the "sign in" section */
+  .signin {
+    background-color: #f1f1f1;
+    text-align: center;
+  }

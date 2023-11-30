@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Link style sheet and to the bootstrap that displays the nav bar -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="index.css">
+  <!-- title of the page -->
+  <title>Horror Movie Store</title>
+</head>
+<!-- Copy and pasted the code from boostrap 5 online for the navigation bar and then modified the href to be linking to the other public folders so it is a functional nav bar. Also, renamed the <a></a> to be a title that matches my webpage.  -->
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <!-- //when you click on the text in the navigation bar it will bring you back to the same title page. Meaning the page that you are on will always say "Horror Movie Store in the nav bar" -->
+      <a class="navbar-brand" href="index.html">Horror Movie Store</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <!-- add in the link to click the purchase button on the nav bar to bring to the store page -->
+            <a class="nav-link" href="products_display.html">Products</a>
+          </li>
+          <li class="nav-item">
+            <!-- this is in preporation for assignment 5 so I do not have to add more to the nav bar in the future and will update it later -->
+            <a class="nav-link" href="#">Shopping Cart</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Created a div class that is called mt-4 because it calls the boostrap that was inputted. I linked it to the word "products" to the link so when you click on the name it'll take you to the products display page -->
+    <div class="mt-4">
+      <p><h1>CHECK OUT OUR SCREAM WORTHY <a href="products_display.html">PRODUCTS!</h1></a></p>
+      <!-- I made a style in the html just for an easy fix to having the title centered -->
+      <style>body {
+      text-align: center;}</style>
+    </div>
+  </div>
+
+<!-- Adding the personalization of bootstrap 5 -->
+<div class="container mt-5">
+  <!-- title of the home page  -->
+  <div class="row">
+      <h3>Click on the Products link to see scary movies that can be at your next movie night</h3>
+      <div class="scary">
+        <!-- create a div class to make sure that the image is sourced and can be changed in the .css -->
+        <img id="small_img" src="./images/collection.jpg" alt="Movie Night Tonight" class="small_img">  
+      </div>
+      </html>

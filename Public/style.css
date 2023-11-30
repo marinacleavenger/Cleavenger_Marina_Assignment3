@@ -1,0 +1,76 @@
+/* importing the font from Google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+/* background to the webpage and how much it takes up the webpage */
+body {
+    width: 900px;
+    margin: 0 auto;
+    background: url("images/background_grey.jpg");
+    font-family: "Creepster", sans-serif;
+}  
+/* Typography for headers*/
+h1, h2 {
+    text-align: center;
+    color: rgb(197, 0, 0);
+}
+
+/* Block Styling, i do not think this does anything */
+.main {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    color: rgb(110, 0, 153);
+}
+/* Div children of body, aka it is the boarder around the products */
+body > div {
+    border: 10px solid rgb(197, 0, 0);
+    display: flex;
+}
+  
+/* How big pictures are in the products display website  */
+  .name-img{
+  
+    width: 250px;
+    height: 250px;
+  }
+  
+  .img-invoice{
+    width: 60px;
+    height: 60px;
+  }
+  .container img {
+    object-fit: cover; 
+  } 
+  /* this creates the purchase button, where it is on the webpage, how big, and the color */
+  .purchase-btn {
+    display: block;
+    width: 200px;
+    height: 80px;
+    margin: 50px auto;
+    background-color: rgb(0, 179, 0);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  /* when the curser goes over the purchase button it changes colors */
+.purchase-btn:hover {
+    background-color:rgb(206, 0, 233);
+  }
+
+  /* this is for the quantity validation error message that pops up when you input a bad quantity, NAN, or not an interger */
+  .errorBox {
+    width: 100%; 
+    height: 40px; 
+    margin-top: 5px;
+    color: #ff2e2e;
+    padding-top: 3px;
+    line-height: 95%;
+  } 
+
+  .textColor { 
+    color: rgb(197, 0, 0);
+    margin: 50px auto;
+  }

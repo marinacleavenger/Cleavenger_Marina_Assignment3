@@ -1,0 +1,17 @@
+/* inported font from GoogleFonts.com */
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+/* The font, sizes, backgrounds, and text color on the home page */
+body {
+    font-family: "Creepster", sans-serif;    margin: 0 auto;
+    font-size: 20px;
+    overflow: auto;
+    position: relative;
+    background-color: rgb(8, 8, 8);
+    color: rgb(255, 255, 255);
+}
+
+ /* I had to make the home of the websites image smaller so it would not take up the entire page. I defined the small-img in the js file and then put the name into the .css so it knows which image i am referring to */
+ .small_img {
+    width: 500px;
+    height: 500px;} 

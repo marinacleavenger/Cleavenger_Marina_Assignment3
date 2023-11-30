@@ -1,0 +1,25 @@
+<!-- bootstrap was copied from W3 schools to create the login page.  -->
+
+<form action="action_page.php" method="post">
+  <head>  <h1>Login</h1>
+      <p>Please login to start shopping</p>
+      <!-- //linking to the style sheet -->
+    <link rel="stylesheet" type="text/css" href="login.css"></head>
+  
+    <div class="container">
+      <label for="uname"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="uname" required>
+  
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+  
+      <button type="submit">Login</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+    </div>
+  
+    <div class="container" style="background-color:#f1f1f1">
+      <button type="button" class="cancelbtn"><a href="./register.html">Back to Registration</a></button>
+    </div>
+  </form>
