@@ -5,7 +5,21 @@
       <p>Please login to start shopping</p>
       <!-- //linking to the style sheet -->
     <link rel="stylesheet" type="text/css" href="login.css"></head>
-  
+    <!DOCTYPE html>
+<html>
+<head>
+  <title>Login Page</title>
+</head>
+<body>
+  <h1>Login</h1>
+  <form action="/login" method="POST"  name = "login_form">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username"><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password"><br><br>
+    <input type="submit" value="Login">
+</form>
+    
     <div class="container">
       <label for="uname"><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="uname" required>
@@ -22,4 +36,4 @@
     <div class="container" style="background-color:#f1f1f1">
       <button type="button" class="cancelbtn"><a href="./register.html">Back to Registration</a></button>
     </div>
-  </form>
+    </form>

@@ -73,31 +73,221 @@ app.get("/products.js", function (request, response, next) {
 app.post("/purchase", function (request, response, next) {
   //Receive data from textboxes and log
   console.log(request.body);
-    response.redirect("./login.html?" + params.toString());
+
+  // Quantities array to hold my quantites to take to login
+  var quantities = [];
+  quantities = request.body;
+  // Below code (lines 81 - 130 based on Branson Suzuki's (F22) server.js
+  // Declaring q as a empty variable, setting the has_quantity default to false (eg. quantities haven't been entered yet), and an empty errors object.
+  var q;
+  var has_quantity = false;
+  var errors = {};
+
+  for (let i in products) {
+    q = request.body["quantity" + i];
+    if (typeof q != "undefined") {
+      console.log(q);
+      // Check that there were quantities inputted
+      if (q > 0) {
+        has_quantity = true;
+      }
+      // Using isNonNegInt to validate values
+      if (isNonNegInt(q) == false) {
+        errors["quantity_error" + i] = isNonNegInt(q, true);
+      }
+      // Checking stock validity, (created pre - IR3 code, as the IR3 code blocks the user from sending in a quantity larger than the qty_available, but still functions properly)
+      if (q > products[i].qty_ava) {
+        errors[
+          "stock_outage" + i
+        ] = `We currently don't have ${q} ${products[i].name}s. Please check back later!`;
+      }
+    }
   }
+  // Prints an error telling the user to select an item to purchase; when the user hasn't input any values.
+  if (has_quantity == false) {
+    errors["no_selections_error"] = "Please select some items to purchase!";
+  }
+  let quantity_object = qs.stringify(request.body);
+  // If all selected quantities are valid, and at least one selection is made without errors, redirect to the invoice.html file, and in all other cases it will stay on the store page.
+  if (Object.keys(errors).length == 0) {
+    // Take the quantity purchased out of the quantity available before pathing to invoice
+    for (let i in products) {
+      products[i].qty_ava -= Number(request.body["quantity" + i]);
+    }
+
+    // store quantities in qty_obj
+    qty_obj = quantity_object;
+    // Redirect to login page before pathing to invoice
+    response.redirect("./login.html?");
+  } else {
+    response.redirect(
+      "./products_display_assign1.html?" +
+        qs.stringify(request.body) +
+        "&" +
+        qs.stringify(errors)
+    );
+  }
+});
+
+// --------------------------- Log-in --------------------------- //
+// Based on Blake Saari's (S2) server.js
+// Example from Lab 13, used to retrieve the user data from my json file
+if (fs.existsSync(user_data)) {
+  var user_data = "./user_data.json";
+  var data_str = fs.readFileSync(user_data, "utf-8");
+  var user_str = JSON.parse(data_str);
+} else {
+  console.log(user_data + " does not exist.");
+}
+
+// Process the login request
+// Process login form POST and redirect to logged in page if ok, back to login page if not
+app.post("/login", function (request, response) {
+  // Start with no errors
+  var errors = {};
+
+  // Declare variables for the inputs from the login form
+  var the_email = request.body["email"].toLowerCase();
+  // save username in case of password change
+  logged_in = the_email;
+  var the_password = request.body["password"];
+
+  // Check if password entered matches password stored in JSON
+  if (typeof user_str[the_email] != "undefined") {
+    // A2IR1 ENCRYPTION: Retrieve the salt and the hashed_password from the user_data.json file, to use the same salt to hash and encrypt the password that is entered.
+    let salt = user_str[the_email].password_salt;
+    let saved_hash = user_str[the_email].password_hash;
+    // Hash the password entered during login using the same salt and parameters
+    let hash = crypto
+      .pbkdf2Sync(the_password, salt, 1000, 64, "sha512")
+      .toString("hex");
+    if (saved_hash == hash) {
+      // If the passwords match...
+      qty_obj["email"] = the_email;
+      qty_obj["fullname"] = user_str[the_email].fullname;
+      var pass_name = user_str[the_email].fullname;
+      // Store quantity data
+      let params = new URLSearchParams(qty_obj);
+      params.append("fullname", pass_name);
+      // If no errors, redirect to invoice page with quantity data
+      response.redirect("./invoice.html?" + params.toString());
+      qty_obj = {};
+      return;
+      // If password incorrect add to errors variable
+    } else {
+      errors["login_error"] = `Incorrect password`;
+    }
+    // If email incorrect add to errors variable
+  } else {
+    errors["login_error"] = `Wrong E-Mail`;
+  }
+  // If errors exist, redirect to login page with errors in string
+  let params = new URLSearchParams(errors);
+  params.append("email", the_email);
+  response.redirect("./login.html?" + params.toString());
+});
+
+// ---------------------------  Registration --------------------------- //
+// Based on Blake Saari's (S2) server.js
+
+app.post("/registration", function (request, response) {
+  // Start with 0 registration errors
+  var registration_errors = {};
+  // Import email from submitted page
+  var register_email = request.body["email"].toLowerCase();
+  // Validate email address (From w3resource - Email Validation)
+  if (
+    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(request.body.email) ==
+    false
+  ) {
+    registration_errors["email"] = `Please enter a valid email address`;
+  }
+  // Validates that there is an email inputted
+  else if (register_email.length == 0) {
+    registration_errors["email"] = `Please enter a valid email address`;
+  }
+  // Validates that the email inputted has not already been registered
+  if (typeof user_str[register_email] != "undefined") {
+    registration_errors[
+      "email"
+    ] = `This email address has already been registered`;
+  }
+  // Validates that password is at least 8 characters
+  if (request.body.password.length < 8) {
+    registration_errors["password"] = `Password must be at least 8 characters`;
+  }
+  // Validates that there is a password inputted
+  else if (request.body.password.length == 0) {
+    registration_errors["password"] = `Please enter a password`;
+  }
+  // Validates that the passwords match
+  if (request.body["password"] != request.body["repeat_password"]) {
+    registration_errors[
+      "repeat_password"
+    ] = `Your passwords do not match, please try again`;
+  }
+  // Validates that the full name inputted consists of A-Z characters exclusively
+  if (/^[A-Za-z, ]+$/.test(request.body["fullname"])) {
+  } else {
+    registration_errors["fullname"] = `Please enter your first and last name`;
+    // Assures that the name inputted will not be longer than 30 characters
+  }
+  if (request.body["fullname"].length > 30) {
+    registration_errors[
+      "fullname"
+    ] = `Please enter a name less than 30 characters`;
+  }
+  // Lines 241-271 based on both the example code provided in class and Blake Saari's (S22)
+  // If there are no errors...
+  if (Object.keys(registration_errors).length == 0) {
+    // A2IR1 ENCRYPTION: First, generate a random salt
+    let salt = crypto.randomBytes(16).toString("hex");
+    let password = request.body["password"];
+    // Hash the password and the salt using the crypto library
+    let hash = crypto
+      .pbkdf2Sync(password, salt, 1000, 64, "sha512")
+      .toString("hex");
+    // Creating my object, getting my email and fullname.
+    user_str[register_email] = {};
+    user_str[register_email].email = request.body.email;
+    user_str[register_email].fullname = request.body.fullname;
+    // Save the salt and the hash to the user_data.json file, salt being the rng to encrypt, hash being the encrypted password
+    user_str[register_email].password_salt = salt;
+    user_str[register_email].password_hash = hash;
+    // Write data into user_data.json file via the user_str variable
+    fs.writeFileSync(user_data, JSON.stringify(user_str));
+    // Add product quantity data
+    qty_obj["email"] = register_email;
+    qty_obj["fullname"] = user_str[register_email].name;
+    let params = new URLSearchParams(qty_obj);
+    // If registered send to login with product quantity data
+    response.redirect("./login.html?" + params.toString());
+  } else {
     // If errors exist, redirect to registration page with errors
     request.body["registration_errors"] = JSON.stringify(registration_errors);
     let params = new URLSearchParams(request.body);
     response.redirect("./register.html?" + params.toString());
-  );
+  }
+});
 
 // --------------------------- Change Registration Details --------------------------- //
 // Based on Blake Saari's (S2) server.js
-app.post("/change_password", function (request, response){
+app.post("/change_password", function (request, response) {
   // Start with no errors
   var reset_errors = {};
 
   // Pulls data inputed into the form from the body
   let current_email = request.body["email"].toLowerCase();
   let current_password = request.body["password"];
-});
+
   // Validates that email is correct format
   if (
-    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(request.body.email) == false
-   ) else {
+    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(request.body.email) ==
+    false
+  ) {
     reset_errors[
       "email"
-    ] = `Please enter a valid email address (Ex: hannip@newjeans.kr)`;
+    ] = `Please enter a valid email address (Ex: marina@me.com)`;
   }
   // Validates that an email was inputted
   else if (current_email.length == 0) {
@@ -192,7 +382,8 @@ app.post("/change_password", function (request, response){
       // Redirect back to update registration page with errors in string
       response.redirect("update.html?" + params.toString());
     }
-  };
+  }
+});
 
 // route all other GET requests to files in public
 app.use(express.static(__dirname + "/public"));
