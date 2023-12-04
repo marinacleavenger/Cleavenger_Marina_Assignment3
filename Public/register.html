@@ -1,58 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<!-- link to the style sheet -->
   <head>
       <link rel="stylesheet" type="text/css" href="invoice.css">
 </head>
-
 
 <div class = "center">
   <h1>Register</h1>
   <p>Please fill in this form to create an account.</p>
 </div>
-<!-- <script>
-  let userParams = (new URL(document.location)).searchParams;
-  if (userParams.has("user")) {
-      document.write(`
-          <button class="btn btn-outline-primary btn-lg dropdown-toggle" type="button" id="profileButton" data-toggle="dropdown" aria-expanded="false">
-              ${userParams.get("user")}
-          </button>
-          <div class="dropdown-menu" aria-labelledby="profileButton">
-              <form action='/logout' method='post'>
-                  <input type="hidden" id="user" name="user" value="${userParams.get('user')}">
-                  <button class="dropdown-item" href="#">Log Out</button>
-              </form>
-          </div>
-          `);
-  } else {
-      document.write(`
-          <button class="btn btn-outline-primary btn-lg dropdown-toggle" type="button" id="profileButton" data-toggle="dropdown" aria-expanded="false">
-              Login
-          </button>
-          <div class="dropdown-menu" aria-labelledby="profileButton">
-              <a class="dropdown-item" href="./login.html">Login</a>
-              <a class="dropdown-item" href="./register.html">Register</a>
-          </div>
-          `);
-  } -->
-
-  function navigate(page) {
-      if (userParams.has("user")) {
-          window.location.assign(`./${page}.html?user=${userParams.get('user')}`);
-      } else {
-          window.location.assign(`./${page}.html`);
-      }
-  }
-</script>
-</div>
-</div>
-
-
 
 <form action="/register" method="POST" form id = "register_form">
 
       <hr>
-
       <label for="username"><b>Email</b></label>
       <input type="text" placeholder="Enter Email" name="username" id="username" required>
   
@@ -65,13 +25,14 @@
       <label for="name"><b>Name</b></label>
       <input type="text" placeholder="Enter Your Name" name="name" id="name" required>
     
+      <button type="button">Register Here!</button>
+
       <hr>
-  
     </div>
+  </form>
     <script src="register.js"></script>
 
     <!-- <a href="invoice.html"><button type="button">Register</button></a> -->
     <div class="container signin">
       <p>Already have an account? <a href="./login.html">Sign in</a>.</p>
     </div>
-  </form>

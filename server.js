@@ -1,60 +1,64 @@
-// Import the Express.js framework
+//Lines 4- copied from my assignment 1 server.js
+// Server.js is mostly compiled from  from the Lualima Assignment 1 instructions and Professor Sal's Video
+// Importing the Express.js framework 
 const express = require('express');
-// Create an instance of the Express application named "app"
-// This instance will be used for defining routes and handling requests
+// Create an instance of the Express application called "app"
+// app will be used to define routes, handle requests, etc
 const app = express();
 
-// Enable parsing of URL-encoded data in requests
+// referenced from Professor Sal's video 
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the "public" directory
+// Route all other GET requests to serve static files from a directory named "public"
 app.use(express.static(__dirname + '/public'));
 
+//Route the filename to look into the user_data.json file so continuously update and look for people's information 
 let filename= __dirname+"/user_data.json";
 
-// Load product data from the "products.json" file and initialize total_sold property for each product
+//sets up the product array from the products_json file
 let products = require(__dirname + '/products.json');
 products.forEach((prod, i) => { prod.total_sold = 0; });
 
+//declare the fs, querystring, crypto. These are dependencies  
 let fs = require('fs');
 let qs = require('querystring');
 let crypto = require('crypto');
-
+//logged in strand will be empty array to fill it with functions
 let loggedIn = [];
 
-// Define a route to handle GET requests for "./products.js". Asked chatgpt to write this code based on this question: "How can I create an Express.js route to serve a JavaScript file containing JSON data from a server?""
+// Define a route for handling a GET request to a path that matches "./products.js"
 app.get("/products.js", function (request, response, next) {
     // Set the response type to JavaScript
     response.type('.js');
-    // Convert products array to a JavaScript string and send it as the response
+    // Convert the JS string into a JSON string and embed it within variable products
     let products_str = `let products = ${JSON.stringify(products)};`;
     response.send(products_str);
 });
 
-// Handle POST requests to "/process_form". Chatgpt wrote this code. "How can I handle form submissions in an Express.js application to validate quantities, update product quantities, and redirect to different pages based on the results?"
+//Copied from Laulima. This is naming the products.json file to be posting the process_purchase 
 app.post("/process_purchase", function (request, response) {
-    // Get textbox inputs as an array
+    //Referenced from Aaron Kim: Textboxs in the array
     let qtys = request.body[`quantity_textbox`];
     console.log(qtys);
-    // Initially set the validity check to true
+    //Set the valididy check to automatically true 
     let valid = true;
-    // Initialize an empty string to hold the URL parameters
+       //This is an empty string so the url will go in it 
     let url = '';
     let soldArray = [];
 
-    // Iterate over each quantity
+    //Iterate through elements in the array 'qtys'
     for (let i in qtys) {
-        // Convert the quantity to a number
+        //Set q as the number
         let q = Number(qtys[i]);
 
-        // Check if the quantity is valid
+        // The code validates user-entered quantities for purchase against available stock. It updates data dependent on the validation results        
         if (validateQuantity(q) === '') {
             // Check if buying this quantity would result in a negative inventory
             if (products[i]['qty_available'] - q < 0) {
                 valid = false;
                 url += `&prod${i}=${q}`;
             }
-            // If not, update total_sold and subtract from available quantity
+        // This part of the code flags as invalid any unsuccessful attempts to buy products or when no products are selected for purchase
             else {
                 soldArray[i] = q;
                 url += `&prod${i}=${q}`;
@@ -72,21 +76,22 @@ app.post("/process_purchase", function (request, response) {
         url += `&user=${request.body.user}`
     }
 
-    // Check if no products were bought
-    if (url === `&prod0=0&prod1=0&prod2=0&prod3=0&prod4=0&prod5=0`) {
+        //If no products were bought, set valid to false. The url will display as followed. 
+        if (url === `&prod0=0&prod1=0&prod2=0&prod3=0&prod4=0&prod5=0`) {
         valid = false;
     }
 
-    // If validity is false, redirect to the store with an error parameter
+    // This code redirects users to a page indicating an error in the purchase attempt if the 'valid' flag is set to 'false', passing along additional information through URL parameters
     if (valid === false) {
         response.redirect(`store.html?error=true` + url);
     }
     else if (!url.includes("user")) {
         response.redirect('login.html?' + url);
     }
-    // Otherwise, redirect to the invoice with the URL parameters attached
+        //If it does not it will redirect to the invoice with the url attached
     else {
-        // Update total_sold and quantity available for each product
+     //Update total and qty only if there are no errors
+
         for (let i in qtys) {
             products[i]['total_sold'] += soldArray[i];
             products[i]['qty_available'] -= soldArray[i];
@@ -95,23 +100,36 @@ app.post("/process_purchase", function (request, response) {
     }
 });
 
-// Login Handling
+// Route all other GET requests to serve static files from a directory named "public"
+app.all('*', function (request, response, next) {
+    //console.log(request.method + ' to ' + request.path);
+    next();
+ });
 
+// Login // adapted from Anthony Lee tutoring 
 app.post("/login", function (request, response) {
-    let raw_user_data = fs.readFileSync("./user_data.json"); // Retrieving User Data from user_data.json
-    let user_data = JSON.parse(raw_user_data); // Making the user data into a parsable JSON object
+    //taking the information from user_data.json
+    let raw_user_data = fs.readFileSync("./user_data.json"); 
+    //parsing the user data into the json object
+    let user_data = JSON.parse(raw_user_data); 
     console.log(request.body);
-    // Variables to hold inputted user information
-    // attempted_user = request.body['email'].toLowerCase();
+    //the login user and login password informations 
     attempted_user = request.body['email'];
+//have to validate the user to make sure that the login will require an email and not just a name
+    let user_arr = request.body['email'].split("@");
+    attempted_user = user_arr[0];
     attempted_pass = request.body['password'];
 
-    if (typeof user_data[attempted_user] != 'undefined') { // If: Username is present in user_data
-        if (user_data[attempted_user].password == attempted_pass) { // If: Password matches corresponding Username
-            delete request.body.password; // Get rid of password object (for privacy)
+    //if in the user_data.json they have to see the username and make sure it is the same in the json file
+    if (typeof user_data[attempted_user] != 'undefined') { 
+        // password matches Username in user_data.json data file 
+        if (user_data[attempted_user].password == attempted_pass) { 
+            // Get rid of password object (for privacy)
+            delete request.body.password; 
             delete request.body.submit;
             let split_user = attempted_user.split("@");
             request.body.user = split_user;
+
             let data = request.body;
             stringified = qs.stringify(data);
             loggedIn.push(attempted_user);
@@ -121,7 +139,8 @@ app.post("/login", function (request, response) {
             } else { // Else (If only signing in)
                 response.redirect("./products_display.html?" + stringified); // Redirect to storefront
             }
-        } else { // Else (Incorrect Password)
+//deleteting the password so it does not show up again and encrypts it 
+        } else { 
             delete request.body.email
             delete request.body.password;
             delete request.body.submit;
@@ -140,57 +159,52 @@ app.post("/login", function (request, response) {
     response.redirect("./login.html?error=email&" + stringified); // User doesn't exist
 });
 
-app.post("/logout", function(request, response) {
-    let indexToRemove = loggedIn.indexOf(request.body.user);
-    loggedIn.splice(indexToRemove, 1);
-    console.log(loggedIn);
-    response.redirect("./login.html");
-});
+// app.post("/logout", function(request, response) {
+//     let indexToRemove = loggedIn.indexOf(request.body.user);
+//     loggedIn.splice(indexToRemove, 1);
+//     console.log(loggedIn);
+//     response.redirect("./login.html");
+// });
 
-// Register
-
+// Registeration 
+//encryption library and extension, this is reference from Anthony Lee's study session 
 function sha256(inputPass) {
     const hash = crypto.createHash('sha256');
     hash.update(inputPass);
     return hash.digest('hex');
 }
+//registration
+app.post("/register", function (request, response) {
+    // You have to process registration form 
+let new_user = request.body.username;
 
-app.post("/register", function(request, response) {
-    let raw_user_data = fs.readFileSync("./user_data.json");
-    let user_data = JSON.parse(raw_user_data);
+let errors = false;
+let response_msg= '';
+//If the username is not in the user_data.json, then therefore it is undefined so it will have an error message
+    if (typeof user_reg_data[new_user] != 'undefined'){
+        //error message 
+        response_msg = 'Username unavailable. Please enter a different username.';
+        errors = true;
+        //if the username is defined by declaration of user_reg_data you have to check if the password and the username is the same 
+    } else if (request.body.password == request.body.repeat_password) {
+        //this is populated by chatgpt when i gave them all the variables I would like them to validate.
+user_reg_data[new_user] = {};
+user_reg_data[new_user].name =request.body.name;
+user_reg_data[new_user].password = request.body.password;
+user_reg_data[new_user].email = request.body.email;
 
-    register_email = request.body['email'];
-    register_name = request.body['name']; 
-    register_pass = request.body['password'];
-    register_repass = request.body['password'];
-
-    const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[a-zA-Z0-9]).{10,16}$/;
-    const nonLetterRegex = /[^a-zA-Z]/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (typeof(user_data[register_email]) != 'undefined') { response.redirect("./register.html?error=exists"); }
-    if (emailRegex.test(register_email)) { response.redirect("./register.html?error=email"); }
-    if (passwordRegex.test(register_pass)) { response.redirect("./register.html?error=pass"); }
-    if (register_pass != register_repass) { response.redirect("./register.html?error=match"); }
-    if (register_name.length < 2 || register_name.length > 30 || nonLetterRegex.test(register_name)) { response.redirect("./register.html?error=name"); }
-
-    user_data[register_email] = {};
-    user_data[register_email].name = register_name;
-    user_data[register_email].password = sha256(register_pass);
-    fs.writeFileSync("./user_data.json", JSON.stringify(user_data));
-
-    delete request.body.email;
-    delete request.body.password;
-    delete request.body.repass;
-    delete request.body.name;
-
-    stringified = qs.stringify(request.body);
-    if (Object.keys(request.body).length != 1) {
-        response.redirect("./invoice.html?" + stringified);
+//login will be redirected so you will be shown to the login page again 
+fs.writeFileSync(filename, JSON.stringify(user_reg_data), 'utf-8');
+response.redirect(`./login`);
+//error message 
     } else {
-        response.redirect("./products_display.html?" + stringified);
+        response_msg = "Repeat password does not match with password"
+        errors = true;
     }
-
-})
+    if (errors){
+        response.send(response_msg);
+    }
+ });
 
 // Route all other GET requests to serve static files from the "public" directory
 app.all('*', function (request, response, next) {
@@ -200,7 +214,7 @@ app.all('*', function (request, response, next) {
 // Start the server; listen on port 8080 for incoming HTTP requests
 app.listen(8080, () => console.log(`listening on port 8080`));
 
-// Function to validate the quantity, returns a string if not a number, negative, not an integer, or a combination of both
+//function to validate the quantity, returns a string if not a number, negative, not an integer, or a combination of both
 // If no errors in quantity, returns an empty string
 function validateQuantity(quantity) {
     if (isNaN(quantity)) {

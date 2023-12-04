@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <head>
+        <!-- referenced from W3 schools asking how to make login page: https://www.w3schools.com/howto/howto_css_login_form.asp -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- link to your css file -->
         <link rel="stylesheet" href="login.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
@@ -15,11 +17,12 @@
             href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&family=Palanquin+Dark:wght@500&display=swap"
             rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Palanquin+Dark:wght@500&display=swap" rel="stylesheet">
+        <!-- //title -->
         <title>Login Page</title>
-       
-    </head>
+        </head>
 </head>
 <body>
+    <!-- centering the login page and the header and nav bar, making a div class to input into the css -->
     <div class = "center">
         <h1>Login Page</h1>
         <p>Please login to make some seriously scary purchases</p>
@@ -33,8 +36,6 @@
             <a href="register.html">Registration</a>
         </div>
     </header>
-
-
         <div class="mt-4">
             <script>
                 let userParams = (new URL(document.location)).searchParams;
@@ -50,7 +51,7 @@
                             </form>
                         </div>
                         `);}
-
+            // Referenced from Chat GPT: This function essentially facilitates page navigation in a web application, taking into account the existence of a "user" parameter in userParams and modifying the URL accordingly before navigating to the specified page.
                 function navigate(page) {
                     if (userParams.has("user")) {
                         window.location.assign(`./${page}.html?user=${userParams.get('user')}`);
@@ -61,16 +62,14 @@
             </script>
         </div>
     </div>
-
-    <!-- <div class="container py-5" style="background-color: purple;"> -->
-        <!-- <div class="container py-5"> -->
-            <!-- <div class = "background" style= "background-image: background_grey.jpg;"> -->
+<!-- this is justifying the error messages  -->
         <div class="row justify-content-center align-items-center">
             <div class="col-md-6">
                 <div class="col-md-12">
+                    <!-- //form post so it takes the login from server.js  -->
                     <form id="login-form" class="form" action="/login" method="post">
+                        <!-- creating a password and forming a div class for css, input that links to the css, and also a span style that will link to the html, but when the error messages are displayed, it will make it red -->
                         <div id="product-qtys"></div>
-                        <!-- <h3 class="text-center text-info">Login</h3> -->
                         <div class="form-group">
                             <label for="email" class="text-info">Email:</label><br>
                             <input type="text" name="email" id="email" class="form-control">
@@ -96,7 +95,9 @@
     </div>
 </body>
 </html>
+<!-- linking the login.js so it will out putting the validation messages correctly   -->
 <script src="login.js"></script>
+<!-- //This code dynamically generates hidden input fields based on the key-value pairs in the params object or Map and appends them to an HTML element with the ID "product-qtys". However, it relies on params being properly defined and populated with data before this script runs in order to create the hidden input fields correctly. -->
 <script>
     let i = 0;
     params.forEach((value, key) => {
