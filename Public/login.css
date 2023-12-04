@@ -75,3 +75,38 @@ form {
       width: 100%;
     }
   }
+
+  .center{
+    text-align: center;
+    justify-content: center;
+  }
+  /* this creates the purchase button, where it is on the webpage, how big, and the color */
+  .submit_button {
+    display: block;
+    width: 200px;
+    height: 80px;
+    margin: 50px auto;
+    background-color: rgb(122, 0, 179);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .form-group{
+    width: 200px;
+    height: 80px;
+    margin: 50px auto;
+  }
+  body {
+    width: 900px;
+    margin: 0 auto;
+    background: url("images/background_grey.jpg");
+    font-family: "Creepster", sans-serif;
+}
+.register_here_tag{
+  margin: 0 auto; 
+  font-size: 40px;
+  text-align: center;
+}

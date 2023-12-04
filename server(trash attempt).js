@@ -4,30 +4,59 @@ const express = require('express');
 // This instance will be used for defining routes and handling requests
 const app = express();
 
+const fs=require('fs');
+
 // Enable parsing of URL-encoded data in requests
 app.use(express.urlencoded({ extended: true }));
 
+let filename= __dirname+"/user_data.json";
+
+let user_reg_data;
+
+if (fs.existsSync(filename)){
+    
+    let data = fs.readFileSync(filename, 'utf-8');
+    
+    //make it something other than a string 
+    user_reg_data= JSON.parse(data);
+    
+    //stat sync will create a stats object that has different elements such as stat size, file name, etc.  Declairing this
+    let user_stats = fs.statSync(filename);
+}
 // Serve static files from the "public" directory
 app.use(express.static(__dirname + '/public'));
-
-let filename= __dirname+"/user_data.json";
 
 // Load product data from the "products.json" file and initialize total_sold property for each product
 let products = require(__dirname + '/products.json');
 products.forEach((prod, i) => { prod.total_sold = 0; });
 
-let fs = require('fs');
+// let fs = require('fs');
 let qs = require('querystring');
 let crypto = require('crypto');
 
 let loggedIn = [];
+
+//part 4 of lab 12. Creating the username and defining it 
+username = 'newuser';
+user_reg_data[username] = {};
+user_reg_data[username].password = 'newpass';
+user_reg_data[username].email = 'newuser@user.com';
+
+//writes the updated user data to the json file, the updated information (lines 28-31), we use this fs.writeFileSync and then the json stringify is converting the json file into a string to use
+fs.writeFileSync(filename, JSON.stringify(user_reg_data), 'utf-8');
+
+// let express = require('express');
+// let app = express();
+
+
+// app.use(express.urlencoded({ extended: true }));
 
 // Define a route to handle GET requests for "./products.js". Asked chatgpt to write this code based on this question: "How can I create an Express.js route to serve a JavaScript file containing JSON data from a server?""
 app.get("/products.js", function (request, response, next) {
     // Set the response type to JavaScript
     response.type('.js');
     // Convert products array to a JavaScript string and send it as the response
-    let products_str = `let products = ${JSON.stringify(products)};`;
+    let products_str = `var products = ${JSON.stringify(products)};`;
     response.send(products_str);
 });
 
@@ -99,46 +128,72 @@ app.post("/process_purchase", function (request, response) {
 
 app.post("/login", function (request, response) {
     let raw_user_data = fs.readFileSync("./user_data.json"); // Retrieving User Data from user_data.json
-    let user_data = JSON.parse(raw_user_data); // Making the user data into a parsable JSON object
+    let user_reg_data = JSON.parse(raw_user_data); // Making the user data into a parsable JSON object
     console.log(request.body);
     // Variables to hold inputted user information
-    // attempted_user = request.body['email'].toLowerCase();
     attempted_user = request.body['email'];
+    // attempted_user = request.body['email'].toLowerCase();
     attempted_pass = request.body['password'];
+//process login form POST and redirect to logged in page if it works, if it doesn't, it will go back to the login page. You will first get the user's entered information to store
+let username_entered = request.body['username'];
+let password_entered = request.body['password'];
 
-    if (typeof user_data[attempted_user] != 'undefined') { // If: Username is present in user_data
-        if (user_data[attempted_user].password == attempted_pass) { // If: Password matches corresponding Username
-            delete request.body.password; // Get rid of password object (for privacy)
-            delete request.body.submit;
-            let split_user = attempted_user.split("@");
-            request.body.user = split_user;
-            let data = request.body;
-            stringified = qs.stringify(data);
-            loggedIn.push(attempted_user);
-            console.log(loggedIn);
-            if (Object.keys(data).length != 1) { // If: Purchase information exists
-                response.redirect("./invoice.html?" + stringified + "&ready=yes"); // Redirect to invoice
-            } else { // Else (If only signing in)
-                response.redirect("./products_display.html?" + stringified); // Redirect to storefront
-            }
-        } else { // Else (Incorrect Password)
-            delete request.body.email
-            delete request.body.password;
-            delete request.body.submit;
-            let data = request.body;
-            stringified = qs.stringify(data);
+let response_msg = '';
+let errors = false;
 
-            response.redirect("./login.html?error=pass&" + stringified);
-        }
+//check if the username exists in user_reg_data
+if (typeof user_reg_data[username_entered] != 'undefined'){
+
+    //check if password matches with username
+    if (password_entered == user_reg_data[username_entered].password){
+        response_msg = `${username_entered} is logged in.`;
+    } else {
+        response_msg = `Incorrect password. Please try again.`;
+        errors= true;
     }
-    delete request.body.email
-    delete request.body.password;
-    delete request.body.submit;
-    let data = request.body;
-    stringified = qs.stringify(data);
+ } else {
+    response_msg = `${username_entered} does not exist.`;
+    errors=true;
+    }if (!errors){
+    response.send(response_msg);
+} else {
+    response.redirect(`./login?error=${response_msg}`)
+}
 
-    response.redirect("./login.html?error=email&" + stringified); // User doesn't exist
 });
+//     if (typeof user_data[attempted_user] != 'undefined') { // If: Username is present in user_data
+//         if (user_data[attempted_user].password == attempted_pass) { // If: Password matches corresponding Username
+//             delete request.body.password; // Get rid of password object (for privacy)
+//             delete request.body.submit;
+//             let split_user = attempted_user.split("@");
+//             request.body.user = split_user;
+//             let data = request.body;
+//             stringified = qs.stringify(data);
+//             loggedIn.push(attempted_user);
+//             console.log(loggedIn);
+//             if (Object.keys(data).length != 1) { // If: Purchase information exists
+//                 response.redirect("./products_display.html?" + stringified + "&ready=yes"); // Redirect to invoice
+//             } else { // Else (If only signing in)
+//                 response.redirect("./products_display.html?" + stringified); // Redirect to storefront
+//             }
+//         } else { // Else (Incorrect Password)
+//             delete request.body.email
+//             delete request.body.password;
+//             delete request.body.submit;
+//             let data = request.body;
+//             stringified = qs.stringify(data);
+
+//             response.redirect("./login.html?error=pass&" + stringified);
+//         }
+//     }
+//     delete request.body.email
+//     delete request.body.password;
+//     delete request.body.submit;
+//     let data = request.body;
+//     stringified = qs.stringify(data);
+
+//     response.redirect("./login.html?error=email&" + stringified); // User doesn't exist
+// });
 
 app.post("/logout", function(request, response) {
     let indexToRemove = loggedIn.indexOf(request.body.user);
