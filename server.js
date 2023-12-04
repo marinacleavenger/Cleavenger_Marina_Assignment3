@@ -10,7 +10,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 // Route all other GET requests to serve static files from a directory named "public"
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/Public'));
 
 //Route the filename to look into the user_data.json file so continuously update and look for people's information 
 let filename= __dirname+"/user_data.json";
