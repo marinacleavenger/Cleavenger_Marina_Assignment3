@@ -36,7 +36,7 @@ app.get("/products.js", function (request, response, next) {
 });
 
 //Copied from Laulima. This is naming the products.json file to be posting the process_purchase 
-app.post("/process_purchase", function (request, response) {
+app.post("/Process_purchase", function (request, response) {
     //Referenced from Aaron Kim: Textboxs in the array
     let qtys = request.body[`quantity_textbox`];
     console.log(qtys);
