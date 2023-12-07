@@ -159,17 +159,6 @@ app.post("/login", function (request, response) {
     response.redirect("./login.html?error=email&" + stringified); // User doesn't exist
 });
 
-// This code block handles a POST request to the '/continue_shopping' endpoint of the app.
-
-app.post("/continue_shopping", function (request, response) {
-    // Create a new URLSearchParams object with the 'temp_user' parameter.
-    let params = new URLSearchParams(temp_user);
-
-    // Redirect the response to the '/products_display.html' endpoint with the query parameters from the 'params' object.
-    response.redirect(`/products_display.html?${params.toString()}`);
-})
-
-
 // Registeration 
 //encryption library and extension, this is reference from Anthony Lee's study session 
 function sha256(inputPass) {
