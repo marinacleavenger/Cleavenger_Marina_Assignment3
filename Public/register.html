@@ -4,13 +4,14 @@
   <head>
       <link rel="stylesheet" type="text/css" href="invoice.css">
 </head>
-
+<!-- centering the header to make it look more aesthetic  -->
 <div class = "center">
   <h1>Register</h1>
   <p>Please fill in this form to create an account.</p>
 </div>
 
 <form action="/register" method="POST" form id = "register_form">
+  <h2>Registration</h2>
 
       <hr>
       <label for="username"><b>Email</b></label>
@@ -24,15 +25,17 @@
 
       <label for="name"><b>Name</b></label>
       <input type="text" placeholder="Enter Your Name" name="name" id="name" required>
-    
-      <button type="button">Register Here!</button>
+
+      <button id="registerButton">Register</button>
 
       <hr>
     </div>
   </form>
+</body>
+</div>
+
     <script src="register.js"></script>
 
-    <!-- <a href="invoice.html"><button type="button">Register</button></a> -->
     <div class="container signin">
       <p>Already have an account? <a href="./login.html">Sign in</a>.</p>
     </div>
