@@ -1,7 +1,5 @@
 //Lines 4- copied from my assignment 1 server.js
 // Server.js is mostly compiled from  from the Lualima Assignment 1 instructions and Professor Sal's Video
-// Importing the crypto module
-const crypto = require('crypto');
 // Importing the Express.js framework 
 const express = require('express');
 // Create an instance of the Express application called "app"
@@ -24,9 +22,11 @@ products.forEach((prod, i) => { prod.total_sold = 0; });
 //declare the fs, querystring, crypto. These are dependencies  
 let fs = require('fs');
 let qs = require('querystring');
-// let crypto = require('crypto');
+let crypto = require('crypto');
 //logged in strand will be empty array to fill it with functions
 let loggedIn = [];
+// Declare a temporary variable to store user inputs
+let temp_user = {}; // temp storage for user inputs to be passed along
 
 // Define a route for handling a GET request to a path that matches "./products.js"
 app.get("/products.js", function (request, response, next) {
@@ -36,29 +36,6 @@ app.get("/products.js", function (request, response, next) {
     let products_str = `let products = ${JSON.stringify(products)};`;
     response.send(products_str);
 });
-
-// Declare a variable to store user data
-let user_data;
-
-// Check if the file exists
-if (fs.existsSync(filename)){
-    // If the file exists, read its contents
-    let data = fs.readFileSync(filename, 'utf8');
-    // Parse the JSON data into a JavaScript object
-    user_data = JSON.parse(data);
-    // Log the user data to the console
-    console.log(user_data);
-} else {
-    // If the file does not exist, log an error message
-    console.log(`${filename} does not exist`);
-    // Initialize the user_data variable as an empty object
-    user_data = {};
-}
-
-// Declare a temporary variable to store user inputs
-let temp_user = {}; // temp storage for user inputs to be passed along
-
-                     
 
 //Copied from Laulima. This is naming the products.json file to be posting the process_purchase 
 app.post("/Process_purchase", function (request, response) {
@@ -146,7 +123,9 @@ app.post("/login", function (request, response) {
     attempted_pass = request.body['password'];
 
     //if in the user_data.json they have to see the username and make sure it is the same in the json file
-    if (typeof user_data[attempted_user] != 'undefined') { 
+    if (typeof user_data[attempted_user] != undefined) { 
+        // if (typeof user_data[attempted_user] != {}) { 
+
         // password matches Username in user_data.json data file 
         if (user_data[attempted_user].password == attempted_pass) { 
             // Get rid of password object (for privacy)
@@ -184,113 +163,162 @@ app.post("/login", function (request, response) {
     response.redirect("./login.html?error=email&" + stringified); // User doesn't exist
 });
 
+// This code block handles a POST request to the '/continue_shopping' endpoint of the app.
 
+app.post("/continue_shopping", function (request, response) {
+    // Create a new URLSearchParams object with the 'temp_user' parameter.
+    let params = new URLSearchParams(temp_user);
 
+    // Redirect the response to the '/products_display.html' endpoint with the query parameters from the 'params' object.
+    response.redirect(`/products_display.html?${params.toString()}`);
+})
 let registration_errors = {};
-
-
-app.post("/register", function (request, response) {
-    //Get user's input from form
-    let reg_name = request.body.name;
-    // let reg_email = request.body.email.toLowerCase();
-    let reg_email = request.body.email;
-    let reg_password = request.body.password;
-    let reg_confirm_password = request.body.confirm_password;
-
-    //Validate Password
-    validateConfirmPassword(reg_password, reg_confirm_password);
-    validatePassword(reg_password);
-    //Validate Email to see if it's only letters and "@"  "." and domain names
-    validateEmail(reg_email);
-    //Validate Name to see if it's only letters
-    validateName(reg_name);
-
-
-    //Server Response to check if there are no errors
-    if (Object.keys(registration_errors).length == 0) {
-        const encryptedPassword = encryptPassword(reg_password);
-        user_data[reg_email] = {};
-        user_data[reg_email].name = reg_name;
-        user_data[reg_email].password = encryptedPassword;
+let user_data = {};
+//registration area 
+app.post("/register", function (request, response) {//Declare registration errors
+     //Get user's input from form
+        let reg_name = request.body.name;
+        let reg_email = request.body.email;
+        // let reg_email = request.body.email.toLowerCase();
+        let reg_password = request.body.password;
+        let reg_confirm_password = request.body.confirm_password;
         
-        //Write the updated user_data object to the user_data.json file
-        fs.writeFile(__dirname + '/user_data.json', JSON.stringify(user_data), 'utf-8', (error) => {
-            if (error) {
-                //If there's an error while writing the file, log the error message
-                console.log('error updating user_data', error);
-            } else {
-                //If the file is written successfully, log a success message
-                console.log('File written successfully. User data is updated.');
-
-            //Add user's info to temp_user
-            temp_user['name'] = reg_name;
-            temp_user['email'] = reg_email;
-
-            //console log temp_user
-            console.log(temp_user);
-            console.log(user_data);
-
-            let params = new URLSearchParams(temp_user);
-            response.redirect(`/invoice.html?regSuccess&valid&${params.toString()}`);
-            }
-        });
+        //Validate Password
+        validateConfirmPassword(reg_password, reg_confirm_password);
+        validatePassword(reg_password);
+        //Validate Email to see if it's only letters and "@"  "." and domain names
+        validateEmail(reg_email);
+        //Validate Name to see if it's only letters
+        validateName(reg_name);
+    
+    
+        //Server Response to check if there are no errors
+        if (Object.keys(registration_errors).length == 0) {
+            user_data[reg_email] = {};
+            user_data[reg_email].name = reg_name;
+            user_data[reg_email].password = reg_password;
             
-        
-    }else { //If there are errors
-        delete request.body.password;
-        delete request.body.confirm_password;
-
-        let params = new URLSearchParams(request.body);
-        response.redirect(`/register.html?${params.toString()}&${qs.stringify(registration_errors)}`);
+            //Write the updated user_data object to the user_data.json file
+            fs.writeFile(__dirname + '/user_data.json', JSON.stringify(user_data), 'utf-8', (error) => {
+                if (error) {
+                    //If there's an error while writing the file, log the error message
+                    console.log('error updating user_data', error);
+                } else {
+                    //If the file is written successfully, log a success message
+                    console.log('File written successfully. User data is updated.');
+    
+                //Add user's info to temp_user
+                temp_user['name'] = reg_name;
+                temp_user['email'] = reg_email;
+    
+                //console log temp_user
+                console.log(temp_user);
+                console.log(user_data);
+    
+                let params = new URLSearchParams(temp_user);
+                response.redirect(`/invoice.html?regSuccess&valid&${params.toString()}`);
+                }
+            });
+                
+            
+        }else { //If there are errors
+            delete request.body.password;
+            delete request.body.confirm_password;
+    
+            let params = new URLSearchParams(request.body);
+            response.redirect(`/registration.html?${params.toString()}&${qs.stringify(registration_errors)}`);
+        }
+    });
+    function validateConfirmPassword(password, confirm_password) {
+        delete registration_errors['confirm_password_type'];
+        console.log(registration_errors);
+    
+        if (confirm_password !== password) {
+            registration_errors ['confirm_password_type'] = 'Passwords do not match';
+        }
     }
-});
-function validateConfirmPassword(password, confirm_password) {
-    delete registration_errors['confirm_password_type'];
-    console.log(registration_errors);
-
-    if (confirm_password !== password) {
-        registration_errors ['confirm_password_type'] = 'Passwords do not match';
+    
+    // Validate Password Function
+    // function validatePassword(password) {
+    //     if (password.length < 10 || password.length > 16) {
+    //         registration_errors.password_error = "Password must be between 10 and 16 characters.";
+    //     } else if (/\s/.test(password)) {
+    //         registration_errors.password_error = "Password cannot contain spaces.";
+    //     }
+    //     // Add more password validation rules as needed
+    // }
+    
+    
+    // Validate Email Function
+    function validateEmail(email) {
+        // Basic email validation using a regular expression
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            registration_errors.email_error = "Invalid email format.";
+        }
     }
-}
+    
+    //Validate Name
+    function validateName(name) {
+        // Basic name validation using a regular expression
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(name)) {
+            registration_errors.name_error = "Invalid name format.";
+        }
+    }
+//     // You have to process registration form 
+// let new_user = request.body.username;
 
-// Encrypt Password Function
-function encryptPassword(password) {
-    // Generate a random salt for each user
-    const salt = crypto.randomBytes(16).toString('hex');
-    // Use the password and salt to create a hash using SHA-256 algorithm
-    const hash = crypto.pbkdf2Sync(password, salt, 10000, 512, 'sha256').toString('hex');
-    // Store both the salt and hash in the database
-    return `${salt}:${hash}`;
-}
+// //create the variables to the errors and response_msg 
+// let errors = false;
+// let response_msg= '';
+// let user_reg_data = {};
 
-// Validate Password Function
-// function validatePassword(password) {
-//     if (password.length < 10 || password.length > 16) {
-//         registration_errors.password_error = "Password must be between 10 and 16 characters.";
-//     } else if (/\s/.test(password)) {
-//         registration_errors.password_error = "Password cannot contain spaces.";
+// // if (!new_user || typeof user_reg_data[new_user] !== 'undefined') {
+//     // Handle error or send a response indicating username unavailability
+
+
+// //understanding that the user data if undefined will be inputted the error message below 
+//     if (typeof user_reg_data[new_user] != 'undefined'){
+//         //error message 
+//         response_msg = 'Username unavailable. Please enter a different username.';
+//         errors = true;
+//         //if the username is defined by declaration of user_reg_data you have to check if the password and the username is the same 
+//     } else if (request.body.password == request.body.repeat_password) {
+//         //this is populated by chatgpt when i gave them all the variables I would like them to validate.
+// user_reg_data[new_user] = {};
+// user_reg_data[new_user].name =request.body.name;
+// user_reg_data[new_user].password = request.body.password;
+// user_reg_data[new_user].email = request.body.email;
+
+// // let user_reg_data = {}; // Initializing as an empty object
+// // Specify the file path where you want to save the JSON data
+// const filePath = 'user_data.json';
+
+// const jsonData = JSON.stringify(user_data, null, 2); // 2 spaces for indentation
+
+
+// // Write the JSON data to the file
+// fs.writeFile(filePath, jsonData, 'utf8', (err) => {
+//     if (err) {
+//         console.error('Error writing to file:', err);
+//         return;
 //     }
-//     // Add more password validation rules as needed
-// }
-
-
-// Validate Email Function
-function validateEmail(email) {
-    // Basic email validation using a regular expression
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-        registration_errors.email_error = "Invalid email format.";
-    }
-}
-
-//Validate Name
-function validateName(name) {
-    // Basic name validation using a regular expression
-    const nameRegex = /^[a-zA-Z\s]+$/;
-    if (!nameRegex.test(name)) {
-        registration_errors.name_error = "Invalid name format.";
-    }
-}
+//     console.log('Data has been written to file successfully!');
+// });
+// console.log(user_data);
+// //login will be redirected so you will be shown to the login page again 
+// fs.writeFileSync(filename, JSON.stringify(user_reg_data), 'utf-8');
+// response.redirect(`./login`);
+// //error message 
+//     } else {
+//         response_msg = "Repeat password does not match with password"
+//         errors = true;
+//     }
+//     if (errors){
+//         response.send(response_msg);
+//     }
+//  });
 
 // Route all other GET requests to serve static files from the "public" directory
 app.all('*', function (request, response, next) {
