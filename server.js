@@ -28,6 +28,15 @@ let qs = require('querystring');
 //logged in strand will be empty array to fill it with functions
 let loggedIn = [];
 
+//using cookies and sessions that have been downloaded as a package 
+let cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+//taken from the example code from Sal's powerpoint presentation
+app.post('/get_cart', function (request, response){
+    response.json(request.session.cart);
+})
+
 // Define a route for handling a GET request to a path that matches "./products.js"
 app.get("/products.js", function (request, response, next) {
     // Set the response type to JavaScript
@@ -42,11 +51,11 @@ let user_data;
 
 // Check if the file exists
 if (fs.existsSync(filename)){
-    // If the file exists, read its contents
+    // If the file exists, the server needs to read it 
     let data = fs.readFileSync(filename, 'utf8');
-    // Parse the JSON data into a JavaScript object
+    // Parse the JSON data into a JavaScript object so it can retrieve the data 
     user_data = JSON.parse(data);
-    // Log the user data to the console
+    // Retrieve the user data to the console
     console.log(user_data);
 } else {
     // If the file does not exist, log an error message
@@ -55,10 +64,25 @@ if (fs.existsSync(filename)){
     user_data = {};
 }
 
-// Declare a temporary variable to store user inputs
-let temp_user = {}; // temp storage for user inputs to be passed along
+// Declare a temporary variable to store user inputs as temporary storage
+let temp_user = {}; 
 
-                     
+app.post("/updateCart", function (request, response) {
+    //get the type of product (either decor, books, movies)
+    let type = request.body['type'];
+    //let it have an open array of how much quantity is there 
+    let amount = request.body['quantity_textbox'];
+    // get the specific type of product and split it by the comma (used @ as well down below)
+    let cookieItemArray = request.cookies[`${type}`].split(",");
+    // set the position in that type to said ammount
+    cookieItemArray[order] = amount;
+    // set the cookie with the new array
+    response.cookie(`${type}`, `${cookieItemArray}`);
+    //redirect to invoice as the response 
+    response.redirect('/invoice.html');
+  
+  });
+              
 
 //Copied from Laulima. This is naming the products.json file to be posting the process_purchase 
 app.post("/Process_purchase", function (request, response) {
@@ -184,11 +208,7 @@ app.post("/login", function (request, response) {
     response.redirect("./login.html?error=email&" + stringified); // User doesn't exist
 });
 
-
-
 let registration_errors = {};
-
-
 app.post("/register", function (request, response) {
     //Get user's input from form
     let reg_name = request.body.name;
@@ -199,7 +219,7 @@ app.post("/register", function (request, response) {
 
     //Validate Password
     validateConfirmPassword(reg_password, reg_confirm_password);
-    validatePassword(reg_password);
+    validatePassword(reg_password.toString());
     //Validate Email to see if it's only letters and "@"  "." and domain names
     validateEmail(reg_email);
     //Validate Name to see if it's only letters
@@ -244,6 +264,11 @@ app.post("/register", function (request, response) {
         response.redirect(`/register.html?${params.toString()}&${qs.stringify(registration_errors)}`);
     }
 });
+
+function validatePassword(password) {
+    return password.length >= 10;
+}
+
 function validateConfirmPassword(password, confirm_password) {
     delete registration_errors['confirm_password_type'];
     console.log(registration_errors);
@@ -262,16 +287,6 @@ function encryptPassword(password) {
     // Store both the salt and hash in the database
     return `${salt}:${hash}`;
 }
-
-// Validate Password Function
-// function validatePassword(password) {
-//     if (password.length < 10 || password.length > 16) {
-//         registration_errors.password_error = "Password must be between 10 and 16 characters.";
-//     } else if (/\s/.test(password)) {
-//         registration_errors.password_error = "Password cannot contain spaces.";
-//     }
-//     // Add more password validation rules as needed
-// }
 
 
 // Validate Email Function

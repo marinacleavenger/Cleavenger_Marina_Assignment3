@@ -1,5 +1,6 @@
 [ 
 	{
+		"type":"movies",
 		"model": "Insidious",
 		"price": 12.55,
 		"image": "/images/insidious.jpg",
@@ -7,6 +8,7 @@
 		"qty_sold": 0
 	},
 	{
+		"type":"movies",
 		"model": "Conjuring",
 		"price": 29.99,
 		"image": "/images/conjuring.jpg",
@@ -14,6 +16,7 @@
 		"qty_sold" : 0
 	},
     {
+		"type":"movies",
 		"model": "Prey For The Devil",
 		"price": 15.33,
 		"image": "/images/prey.jpg",
@@ -22,6 +25,7 @@
 
 	},
     {
+		"type":"movies",
 		"model": "Talk To Me",
 		"price": 6.66,
 		"image": "/images/talk.jpg",
@@ -30,11 +34,106 @@
 
 	},
     {
+		"type":"movies",
 		"model": "Horror Movie Collection",
 		"price": 130.33,
 		"image": "/images/collection.jpg",
 		"qty_available": 30,
 		"qty_sold" : 0
 
+	},
+	{
+		"type":"books",
+		"model": "Amityville Horror",
+		"price": 12.55,
+		"image": "/images/amity.jpg",
+		"qty_available": 200,
+		"qty_sold": 0
+	},
+	{
+		"type":"books",
+		"model": "Haunting of Hill House",
+		"price": 12.99,
+		"image": "/images/hillhouse.jpg",
+		"qty_available": 300,
+		"qty_sold" : 0
+	},
+    {
+		"type":"books",
+		"model": "Pet Cemetary",
+		"price": 15.33,
+		"image": "/images/petbook.jpg",
+		"qty_available": 300,
+		"qty_sold" : 0
+
+	},
+    {
+		"type":"books",
+		"model": "Salems Lot",
+		"price": 6.66,
+		"image": "/images/salemslot.jpg",
+		"qty_available": 300,
+		"qty_sold" : 0
+
+	},
+    {
+		"type":"books",
+		"model": "IT",
+		"price": 10.33,
+		"image": "/images/IT_book.jpg",
+		"qty_available": 300,
+		"qty_sold" : 0
+
+	},
+	{
+		"type":"decor",
+		"model": "Anabelle Doll",
+		"price": 12.55,
+		"image": "/images/anabelle.jpg",
+		"qty_available": 1,
+		"qty_sold": 0
+	},
+	{
+		"type":"decor",
+		"model": "Jack-O-Lantern",
+		"price": 29.99,
+		"image": "/images/jack.jpg",
+		"qty_available": 500,
+		"qty_sold" : 0
+	},
+    {
+		"type":"decor",
+		"model": "Cat Poster",
+		"price": 15.33,
+		"image": "/images/cat.jpg",
+		"qty_available": 600,
+		"qty_sold" : 0
+
+	},
+    {
+		"type":"decor",
+		"model": "Rat",
+		"price": 6.66,
+		"image": "/images/rat.jpg",
+		"qty_available": 900,
+		"qty_sold" : 0
+
+	},
+    {
+		"type":"decor",
+		"model": "Spiders",
+		"price": 130.33,
+		"image": "/images/spider.jpg",
+		"qty_available": 2000,
+		"qty_sold" : 0
+	},
+	{
+		"type":"decor",
+		"model": "Ouija Board",
+		"price": 130.33,
+		"image": "/images/ouija.png",
+		"qty_available": 30,
+		"qty_sold" : 0
 	}
+
 ]

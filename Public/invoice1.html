@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Taken from Bootstrap 4 and delivered in the .css and .js files for the formatting of the webpage -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Linking to the style sheet for the invoice  -->
+    <link rel="stylesheet" type="text/css" href="invoice.css">
+    <!-- From server.js, we made the products.json protected and renamed to draw from the same file, but it is from a private file so hackers cannot change the elements. It is drawing from the products in products.json, but it is not public -->
+    <script type="text/javascript" src="/products.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Receipt</title>
+
+</head>
+<body>
+    <!-- I copied and pasted this from products_display.html so it will be the same nav bar and header. this is the header at the top of the webpage that has been pasted from bootstrap 4 -->
+<div class="jumbotron text-center" style="margin-bottom:0">
+    <h1>Marina's Horror Movie Store</h1>
+    <p> Purchase a great horror movie for a late night movie night!</p> 
+  </div>
+  <!-- (Same from products_display.html)Navigation bar that displays the links, links href, titles, buttons that are interactive on the nav bar -->
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">The Scary Movies</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Shopping Cart">Shopping Cart</a>
+        </li>   
+        <li class="nav-item">
+          <a class="nav-link" href="products_display.html">Products</a>
+        </li>   
+      </ul>
+    </div>  
+  </nav>
+<!-- Copied form Store1/Poke12 - This is creating the table headers and rows for the invoice/receipt. 5 of these will make 5 rows  -->
+    <table>
+        <thead>
+            <tr>
+                <th>Scary Items</th>
+                <th>Scary Item Name</th>
+                <th>Carved Quantity</th>
+                <th>Scream Worthy Price</th>
+                <th>Spooky Total</th>
+            </tr>
+        </thead>
+        <tbody id="invoiceTable">
+        </tbody>
+        <tfoot>
+            <!-- this is what is put inside the rows that are dynamic between how many products are purchased to reflect on the table rows -->
+            <!-- calculating subtotal at the end of the table footer needs to start at $0.00-->
+            <tr>
+                <td colspan="3">Sub-total</td>
+                <td id="subtotal_cell">$0.00</td>
+            </tr>
+     <!-- calculating tax at the end of the table footer by multiplying the total by 5.75% -->
+            <tr>
+                <td colspan="3">Tax @ 5.75%</td>
+                <td id="tax_cell">$0.00</td>
+            </tr>
+ <!-- calculating shipping cost at the end of the table footer -->
+            <tr>
+                <td colspan="3">Shipping</td>
+                <td id="shipping_cell">$0.00</td>
+            </tr>    
+ <!-- calculating the grand total at the end of the table footer -->
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td id="total_cell"><strong>$0.00</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class = 'buttons-container'>
+      <input class = 'sm-button-highlight' type="submit" value=" Continue Shopping"  name="continue" onclick="invoice.action = '/continue_shopping'" style="width: 40%">
+      <input class = 'sm-button-highlight' type="submit" value=" Complete Purchase"  name="Logout" onclick="invoice.action = '/continue_shopping'" style="width: 40%">
+    </form>
+    </div>
+    <!-- need to link to the .js file becuase it houses the calculations and generations of rows  -->
+    <script src="invoice.js" type="module"></script>
+</body>
+</html>

@@ -3,6 +3,9 @@ let params = (new URL(document.location)).searchParams;
 let error;
 let order = [];
 
+//assigned type in products.json
+let type = 'movies';
+
 //This is if there was an error, you can get the params to execute an error so it will not go forward 
 error = params.get('error');
 
@@ -30,6 +33,8 @@ if(error == 'true'){
 
 //This code displays the a loop for  product images from boostrap 5 hence the div class "col-md-6".
 for (let i = 0; i < products.length; i++) {
+    //let the products only be taken from the type that was assigned in the products.json 
+    if (products[i].type === "movies") {
     document.querySelector('.row').innerHTML += 
         `<div class="col-md-6 textColor">
         <div class="name">
@@ -77,4 +82,4 @@ for (let i = 0; i < products.length; i++) {
         //Lets the validationQuantity to the innerHTML to the section
         document.getElementById(`invalidQuantity${quantity.id}`).innerHTML = validationQuantity;
     
-    }
+    }}
